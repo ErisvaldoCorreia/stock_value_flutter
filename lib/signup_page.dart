@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:stock_value/common.dart';
 
-class StartPage extends StatefulWidget {
-  const StartPage({Key? key}) : super(key: key);
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({Key? key}) : super(key: key);
 
   @override
-  State<StartPage> createState() => _StartPageState();
+  State<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _StartPageState extends State<StartPage> {
-  bool _signinLoading = false;
+class _SignUpPageState extends State<SignUpPage> {
+  bool _signUpLoading = false;
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _repeatPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -63,8 +64,27 @@ class _StartPageState extends State<StartPage> {
               ),
             ),
             Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: TextFormField(
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Plese repeat your password';
+                  }
+                  if (_passwordController.text !=
+                      _repeatPasswordController.text) {
+                    return 'Passwords are different! Please check';
+                  }
+                  return null;
+                },
+                controller: _repeatPasswordController,
+                decoration:
+                    const InputDecoration(label: Text('Confirm Password')),
+                obscureText: true,
+              ),
+            ),
+            Padding(
               padding: const EdgeInsets.all(8.0),
-              child: _signinLoading
+              child: _signUpLoading
                   ? const Center(
                       child: CircularProgressIndicator(),
                     )
@@ -75,26 +95,36 @@ class _StartPageState extends State<StartPage> {
                           return;
                         }
                         setState(() {
-                          _signinLoading = true;
+                          _signUpLoading = true;
                         });
 
                         try {
-                          await client.auth.signInWithPassword(
+                          await client.auth.signUp(
                               email: _emailController.text,
                               password: _passwordController.text);
+
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text('Success on create account',
+                                style: TextStyle(color: Colors.black)),
+                            backgroundColor: Colors.greenAccent,
+                          ));
+                          setState(() {
+                            _signUpLoading = false;
+                          });
                         } catch (e) {
                           ScaffoldMessenger.of(context)
                               .showSnackBar(const SnackBar(
-                            content: Text('Login Failed'),
+                            content: Text('Create account failed'),
                             backgroundColor: Colors.redAccent,
                           ));
                           setState(() {
-                            _signinLoading = false;
+                            _signUpLoading = false;
                           });
                         }
                       },
                       child: const Text(
-                        'Sign In',
+                        'Create your account',
                         style: TextStyle(fontSize: 20),
                       ),
                     ),
@@ -103,10 +133,10 @@ class _StartPageState extends State<StartPage> {
               padding: const EdgeInsets.all(8.0),
               child: TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/signup');
+                  Navigator.pop(context);
                 },
                 child: const Text(
-                  'No have account? Sign Up',
+                  'Handle your login',
                   style: TextStyle(fontSize: 12, color: Colors.black38),
                 ),
               ),

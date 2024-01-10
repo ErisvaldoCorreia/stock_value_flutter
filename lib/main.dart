@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stock_value/common.dart';
 import 'package:stock_value/home_page.dart';
+import 'package:stock_value/signup_page.dart';
 import 'package:stock_value/start_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -24,7 +25,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.orange,
       ),
-      home: const MyWidget(),
+      initialRoute: '/start',
+      routes: {
+        '/start': (context) => const MyWidget(),
+        '/signup': (context) => const SignUpPage()
+      },
     );
   }
 }
